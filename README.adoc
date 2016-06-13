@@ -18,6 +18,15 @@ sudo dpkg-reconfigure libdvd-pkg
 
 TODO
 
+== Features TODO
+
+* plug to licence manager
+* remember position on clean exit
+* switch fullscreen
+* next/previous on chapter/files
+* basic playlist/directory play
+* auto-repeat on end
+
 = License
 
 GPL V3 
