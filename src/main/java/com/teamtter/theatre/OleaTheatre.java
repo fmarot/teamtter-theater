@@ -6,12 +6,14 @@ import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.Properties;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+
+import com.teamtter.options.AppConfig;
+import com.teamtter.theatre.gui.RemoteControlController;
+import com.teamtter.theatre.options.GeneralConfig;
+import com.teamtter.theatre.options.MediaToStartWithConfig;
 
 import lombok.extern.slf4j.Slf4j;
 import uk.co.caprica.vlcj.binding.LibVlc;
@@ -23,14 +25,19 @@ import uk.co.caprica.vlcj.mrl.DvdMrl;
 @Slf4j
 public class OleaTheatre {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
+
+		AppConfig cfg = new com.teamtter.options.AppConfig(args, GeneralConfig.class, MediaToStartWithConfig.class);
+		MediaToStartWithConfig mediaConfig = cfg.getConfigBean(MediaToStartWithConfig.class);
+		GeneralConfig generalConfig = cfg.getConfigBean(GeneralConfig.class);
+
 		boolean found = new NativeDiscovery().discover();
 		if (found) {
 			System.out.println(LibVlc.INSTANCE.libvlc_get_version());
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					new OleaTheatre();
+					new OleaTheatre(generalConfig, mediaConfig);
 				}
 			});
 		} else {
@@ -44,30 +51,28 @@ public class OleaTheatre {
 
 	private RemoteControlController remoteControlController;
 
-	private AppConfig appConfig;
-
-	public OleaTheatre() {
-		appConfig = new AppConfig();
+	public OleaTheatre(GeneralConfig generalConfig, MediaToStartWithConfig mediaConfig) {
 		initGui();
-		startPlaying();
-		displayLogo();
+		startPlaying(generalConfig, mediaConfig);
+		displayLogo(generalConfig);
 	}
 
-	private void displayLogo() {
-		String logoPath = "/media/vg1-data/dev/sources/olea-theatre/src/main/resources/logoOlea.png";
+	private void displayLogo(GeneralConfig generalConfig) {
+		String logoPath = generalConfig.getLogoFile().getAbsolutePath();
 		logo().file(logoPath).location(0, 0).position(libvlc_logo_position_e.top_left).opacity(255).enable(true)
 				.apply(mediaPlayerComponent.getMediaPlayer());
 	}
 
-	private void startPlaying() {
-		File fileToPlay = new File(appConfig.get(AppConfig.FILE_TO_PLAY));
+	private void startPlaying(GeneralConfig generalConfig, MediaToStartWithConfig mediaConfig) {
+		File fileToPlay = mediaConfig.getFileToPlay();
 		if (fileToPlay.exists()) {
 			mediaPlayerComponent.getMediaPlayer().playMedia(fileToPlay.getAbsolutePath());
-		} else {	// default to DVD if no file is specified or does not exist
-			String dvdDrivePath = appConfig.get(AppConfig.DVD_PATH);
-			int title = Integer.parseInt(appConfig.get(AppConfig.DVD_TITLE));
-			int chapter = Integer.parseInt(appConfig.get(AppConfig.DVD_CHAPTER));
-			String dvdMediaResourceLocation = new DvdMrl().device(dvdDrivePath).title(title).chapter(chapter).value();
+		} else { // default to DVD if no file is specified or does not exist
+			String dvdMediaResourceLocation = new DvdMrl()
+					.device(generalConfig.getDvdPath())
+					.title(mediaConfig.getStartTitle())
+					.chapter(mediaConfig.getStartChapter())
+					.value();
 			mediaPlayerComponent.getMediaPlayer().playMedia(dvdMediaResourceLocation, new String[] {});
 		}
 	}

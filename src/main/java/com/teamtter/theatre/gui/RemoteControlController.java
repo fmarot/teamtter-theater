@@ -1,4 +1,4 @@
-package com.teamtter.theatre;
+package com.teamtter.theatre.gui;
 
 import lombok.Getter;
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;

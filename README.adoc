@@ -1,0 +1,23 @@
+:toc: macro
+
+
+toc::[]
+
+= Teamtter Theatre
+
+== Install
+
+=== Install Linux
+
+to play DVD:
+
+sudo apt-get install vlc libdvd-pkg
+sudo dpkg-reconfigure libdvd-pkg
+
+=== Install Windows
+
+TODO
+
+= License
+
+GPL V3 

@@ -1,4 +1,4 @@
-package com.teamtter.theatre;
+package com.teamtter.theatre.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
