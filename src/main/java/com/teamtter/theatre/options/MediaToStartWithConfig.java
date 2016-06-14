@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class MediaToStartWithConfig {
-	private File fileToPlay;
+	private File fileToPlay = new File("");
 	private Integer startTitle;
 	private Integer startChapter;
 	

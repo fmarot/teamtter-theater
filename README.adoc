@@ -18,13 +18,16 @@ TODO
 
 == Features TODO
 
-* switch fullscreen
 * next/previous on chapter/files
 * splash screen on start
 * plug to licence manager
 * remember position/settings on clean exit (incl. dual monitor)
 * basic playlist/directory play
 * auto-repeat on end
+
+== Features Done
+
+* switch fullscreen
 
 = License
 

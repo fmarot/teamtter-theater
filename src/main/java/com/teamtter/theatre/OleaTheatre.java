@@ -60,8 +60,8 @@ public class OleaTheatre {
 	public OleaTheatre(GeneralConfig generalConfig, MediaToStartWithConfig mediaConfig) {
 		initGui();
 		configure();
-		displayLogo();
 		startPlaying(generalConfig, mediaConfig);
+		displayLogo();
 	}
 
 	private void configure() {
@@ -84,12 +84,22 @@ public class OleaTheatre {
 			URL logoInJar = getClass().getResource("/logoOlea.png");
 			Resources.asByteSource(logoInJar).copyTo(com.google.common.io.Files.asByteSink(tmpLogoFile));
 			tmpLogoFile.deleteOnExit();
-			logo().file(tmpLogoFile.getAbsolutePath())
-					.location(100, 100)
-					.position(libvlc_logo_position_e.top_left)
-					.opacity(255)
-					.enable(true)
-					.apply(mediaPlayerComponent.getMediaPlayer());
+			// display the logo after one second (otherwise it is not displayed)
+			new Thread() {
+				@Override
+				public void run() {
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+					}
+					logo().file(tmpLogoFile.getAbsolutePath())
+							.location(0, 0)
+							.position(libvlc_logo_position_e.top_left)
+							.opacity(255)
+							.enable(true)
+							.apply(mediaPlayerComponent.getMediaPlayer());
+				}
+			}.run();
 		} catch (Exception e) {
 			log.error("", e);
 		}
