@@ -5,8 +5,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
@@ -14,30 +12,29 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class AppConfig {
-	private static final String APP_PROPERTIES_FILENAME = "app.properties";
 
-	private Map<Class<?>, Object> beans = new HashMap<>();
-	private String[] args;
+	private static final String	APP_PROPERTIES_FILENAME	= "app.properties";
 
-	public AppConfig(String[] args, Class<?>... configClasses) throws Exception {
-		this.args = args;
+	private Properties			properties;
 
-		for (Class<?> o : configClasses) {
-			try {
-				Object bean = o.newInstance();
-				beans.put(o, bean);
-			} catch (Exception e) {
-				log.error("Error instantiating {}", o, e);
-			}
+	private String	applicationName;
+
+	public AppConfig(String[] args, String applicationName) throws Exception {
+		this.applicationName = applicationName;
+		properties = loadProperties(args);
+	}
+
+	public <T> T getConfigBean(Class<T> clazz) throws Exception {
+		T bean = clazz.newInstance();
+		for (Entry<Object, Object> entry : properties.entrySet()) {
+			String sKey = (String) entry.getKey();
+			String sValue = (String) entry.getValue();
+			tryToAssignValueAFieldInTheBean(sKey, sValue, bean);
 		}
-		load();
+		return bean;
 	}
 
-	public <T> T getConfigBean(Class<T> clazz) {
-		return (T) beans.get(clazz);
-	}
-
-	private Properties loadProperties() throws Exception {
+	private Properties loadProperties(String[] args) throws Exception {
 		Properties prop = new Properties();
 
 		// load from the jar
@@ -46,11 +43,20 @@ public class AppConfig {
 		}
 
 		// override with content of local file
-		InputStream input = null;
 		File fileSystemConfigFile = new File(APP_PROPERTIES_FILENAME);
 		if (fileSystemConfigFile.exists()) {
-			try (InputStream input2 = new FileInputStream(APP_PROPERTIES_FILENAME)) {
-				prop.load(input2);
+			try (InputStream input = new FileInputStream(APP_PROPERTIES_FILENAME)) {
+				prop.load(input);
+			}
+		}
+
+		// override with content in file in user's $HOME/.applicationName/APP_PROPERTIES_FILENAME
+		String homePath = System.getProperty("user.home");
+		File appFolderInUserHome = new File(homePath, "." + applicationName);
+		File userSpecificConfig = new File(appFolderInUserHome, APP_PROPERTIES_FILENAME);
+		if (userSpecificConfig.exists()) {
+			try (InputStream input = new FileInputStream(APP_PROPERTIES_FILENAME)) {
+				prop.load(input);
 			}
 		}
 
@@ -71,34 +77,16 @@ public class AppConfig {
 		return prop;
 	}
 
-	private void load() throws Exception {
-		Properties properties = loadProperties();
-		for (Entry<Object, Object> entry : properties.entrySet()) {
-			String sKey = (String) entry.getKey();
-			String sValue = (String) entry.getValue();
-			assignValueToFieldInOneOfTheBeans(sKey, sValue, beans);
-		}
-	}
-
-	private void assignValueToFieldInOneOfTheBeans(String sKey, String sValue, Map<Class<?>, Object> beans) {
-		boolean oneFieldSet = false;
-		for (Entry<Class<?>, Object> entry : beans.entrySet()) {
-			try {
-				Class<?> clazz = entry.getKey();
-				Object bean = entry.getValue();
-				Field declaredField = clazz.getDeclaredField(sKey);
-				declaredField.setAccessible(true);
-				Object typedValue = convertValueToFieldType(sValue, declaredField);
-				declaredField.set(bean, typedValue);
-				log.info("Option {} set on bean {}", sKey, clazz.getSimpleName());
-				oneFieldSet = true;
-				break;
-			} catch (Exception e) {
-				log.trace("", e);
-			}
-		}
-		if (!oneFieldSet) {
-			log.warn("Unable to find matching bean class for option {}={}", sKey, sValue);
+	private <T> void tryToAssignValueAFieldInTheBean(String sKey, String sValue, T bean) {
+		Class<? extends Object> beanClass = bean.getClass();
+		try {
+			Field declaredField = beanClass.getDeclaredField(sKey);
+			declaredField.setAccessible(true);
+			Object typedValue = convertValueToFieldType(sValue, declaredField);
+			declaredField.set(bean, typedValue);
+			log.info("Option {} set on bean {}", sKey, beanClass.getSimpleName());
+		} catch (Exception e) {
+			log.trace("Unable to assign {} to bean {}", sKey, beanClass.getSimpleName());
 		}
 	}
 

@@ -26,13 +26,13 @@ import uk.co.caprica.vlcj.mrl.DvdMrl;
 public class OleaTheatre {
 
 	public static void main(String[] args) throws Exception {
-
-		AppConfig cfg = new com.teamtter.options.AppConfig(args, GeneralConfig.class, MediaToStartWithConfig.class);
+		// Get config from file & cmdLine in beans *Config
+		AppConfig cfg = new AppConfig(args, OleaTheatre.class.getSimpleName());
 		MediaToStartWithConfig mediaConfig = cfg.getConfigBean(MediaToStartWithConfig.class);
 		GeneralConfig generalConfig = cfg.getConfigBean(GeneralConfig.class);
 
-		boolean found = new NativeDiscovery().discover();
-		if (found) {
+		boolean vlcLibFound = new NativeDiscovery().discover();
+		if (vlcLibFound) {
 			System.out.println(LibVlc.INSTANCE.libvlc_get_version());
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
