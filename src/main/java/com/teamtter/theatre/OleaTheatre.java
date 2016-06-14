@@ -3,13 +3,18 @@ package com.teamtter.theatre;
 import static uk.co.caprica.vlcj.player.Logo.logo;
 
 import java.awt.BorderLayout;
+import java.awt.Canvas;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import com.google.common.io.Resources;
 import com.teamtter.options.AppConfig;
 import com.teamtter.theatre.gui.RemoteControlController;
 import com.teamtter.theatre.options.GeneralConfig;
@@ -21,6 +26,7 @@ import uk.co.caprica.vlcj.binding.internal.libvlc_logo_position_e;
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 import uk.co.caprica.vlcj.mrl.DvdMrl;
+import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 @Slf4j
 public class OleaTheatre {
@@ -53,14 +59,40 @@ public class OleaTheatre {
 
 	public OleaTheatre(GeneralConfig generalConfig, MediaToStartWithConfig mediaConfig) {
 		initGui();
+		configure();
+		displayLogo();
 		startPlaying(generalConfig, mediaConfig);
-		displayLogo(generalConfig);
 	}
 
-	private void displayLogo(GeneralConfig generalConfig) {
-		String logoPath = generalConfig.getLogoFile().getAbsolutePath();
-		logo().file(logoPath).location(0, 0).position(libvlc_logo_position_e.top_left).opacity(255).enable(true)
-				.apply(mediaPlayerComponent.getMediaPlayer());
+	private void configure() {
+		EmbeddedMediaPlayer mediaPlayer = mediaPlayerComponent.getMediaPlayer();
+		mediaPlayer.addMediaPlayerEventListener(new TheatreListener()); // for debugging purpose
+
+		// Configure fullscreen toggle feature
+		mediaPlayer.setEnableMouseInputHandling(false); // must be called for M$ Windows
+		mediaPlayer.setEnableKeyInputHandling(false); // must be called for M$ Windows
+		mediaPlayer.setFullScreenStrategy(new TheatreFullScreenStrategy(frame));
+		Canvas videoSurface = mediaPlayerComponent.getVideoSurface();
+		videoSurface.addMouseListener(remoteControlController);
+	}
+
+	private void displayLogo() {
+		try {
+			// extract logo to a real filesystem file
+			Path tmpPath = Files.createTempFile("logoOlea", ".png");
+			File tmpLogoFile = tmpPath.toFile();
+			URL logoInJar = getClass().getResource("/logoOlea.png");
+			Resources.asByteSource(logoInJar).copyTo(com.google.common.io.Files.asByteSink(tmpLogoFile));
+			tmpLogoFile.deleteOnExit();
+			logo().file(tmpLogoFile.getAbsolutePath())
+					.location(100, 100)
+					.position(libvlc_logo_position_e.top_left)
+					.opacity(255)
+					.enable(true)
+					.apply(mediaPlayerComponent.getMediaPlayer());
+		} catch (Exception e) {
+			log.error("", e);
+		}
 	}
 
 	private void startPlaying(GeneralConfig generalConfig, MediaToStartWithConfig mediaConfig) {
