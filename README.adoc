@@ -3,8 +3,6 @@
 
 toc::[]
 
-= Teamtter Theatre
-
 == Install
 
 === Install Linux
@@ -20,10 +18,11 @@ TODO
 
 == Features TODO
 
-* plug to licence manager
-* remember position on clean exit
 * switch fullscreen
 * next/previous on chapter/files
+* splash screen on start
+* plug to licence manager
+* remember position/settings on clean exit
 * basic playlist/directory play
 * auto-repeat on end
 
