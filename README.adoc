@@ -18,6 +18,7 @@ TODO
 
 == Features TODO
 
+* configure audio output ??? or leave it to system configuration ??? (hdmi !)
 * single button to play DVD (from configured drive) + fileChooser to play local Files
 * next/previous on chapter/files
 * splash screen on start
