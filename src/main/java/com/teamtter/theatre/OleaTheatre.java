@@ -58,7 +58,7 @@ public class OleaTheatre {
 	private RemoteControlController remoteControlController;
 
 	public OleaTheatre(GeneralConfig generalConfig, MediaToStartWithConfig mediaConfig) {
-		initGui();
+		initGui(generalConfig);
 		configure();
 		startPlaying(generalConfig, mediaConfig);
 		displayLogo();
@@ -66,7 +66,7 @@ public class OleaTheatre {
 
 	private void configure() {
 		EmbeddedMediaPlayer mediaPlayer = mediaPlayerComponent.getMediaPlayer();
-		mediaPlayer.addMediaPlayerEventListener(new TheatreListener()); // for debugging purpose
+//		mediaPlayer.addMediaPlayerEventListener(new TheatreListener()); // for debugging purpose
 
 		// Configure fullscreen toggle feature
 		mediaPlayer.setEnableMouseInputHandling(false); // must be called for M$ Windows
@@ -108,23 +108,18 @@ public class OleaTheatre {
 	private void startPlaying(GeneralConfig generalConfig, MediaToStartWithConfig mediaConfig) {
 		File fileToPlay = mediaConfig.getFileToPlay();
 		if (fileToPlay.exists()) {
-			mediaPlayerComponent.getMediaPlayer().playMedia(fileToPlay.getAbsolutePath());
+			remoteControlController.playFile(fileToPlay);
 		} else { // default to DVD if no file is specified or does not exist
-			String dvdMediaResourceLocation = new DvdMrl()
-					.device(generalConfig.getDvdPath())
-					.title(mediaConfig.getStartTitle())
-					.chapter(mediaConfig.getStartChapter())
-					.value();
-			mediaPlayerComponent.getMediaPlayer().playMedia(dvdMediaResourceLocation, new String[] {});
+			remoteControlController.playDvd(mediaConfig.getStartTitle(), mediaConfig.getStartChapter());
 		}
 	}
 
-	private void initGui() {
+	private void initGui(GeneralConfig generalConfig) {
 		frame = new JFrame("Olea Theatre");
 		frame.setBounds(100, 100, 600, 400);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
-		remoteControlController = new RemoteControlController(mediaPlayerComponent);
+		remoteControlController = new RemoteControlController(mediaPlayerComponent, frame, generalConfig);
 		frame.add(mediaPlayerComponent, BorderLayout.CENTER);
 		frame.add(remoteControlController.getView(), BorderLayout.SOUTH);
 

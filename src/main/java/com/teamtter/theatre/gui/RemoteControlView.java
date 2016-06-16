@@ -13,6 +13,8 @@ public class RemoteControlView extends JPanel {
 	private final JButton rewindButton;
 
 	private final JButton skipButton;
+	private final JButton chooseFileButton;
+	private final JButton dvdButton;
 
 	private final RemoteControlController controller;
 
@@ -24,6 +26,10 @@ public class RemoteControlView extends JPanel {
 		add(rewindButton);
 		skipButton = new JButton("Skip");
 		add(skipButton);
+		chooseFileButton = new JButton("choose File");
+		add(chooseFileButton);
+		dvdButton = new JButton("dvd");
+		add(dvdButton);
 
 		pauseButton.addActionListener(new ActionListener() {
 			@Override
@@ -43,6 +49,20 @@ public class RemoteControlView extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				controller.skip();
+			}
+		});
+		
+		chooseFileButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				controller.playFile();
+			}
+		});
+		
+		dvdButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				controller.playDvd();
 			}
 		});
 	}
