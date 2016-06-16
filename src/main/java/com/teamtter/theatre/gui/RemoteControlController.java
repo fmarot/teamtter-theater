@@ -63,7 +63,7 @@ public class RemoteControlController extends MouseAdapter {
 	}
 
 	public void rewind() {
-//		mediaPlayerComponent.getMediaPlayer().skip(-10000);
+		// mediaPlayerComponent.getMediaPlayer().skip(-10000);
 		EmbeddedMediaPlayer mediaPlayer = mediaPlayerComponent.getMediaPlayer();
 		int chapter = mediaPlayer.getChapter();
 		int title = mediaPlayer.getTitle();
@@ -75,21 +75,20 @@ public class RemoteControlController extends MouseAdapter {
 		EmbeddedMediaPlayer mediaPlayer = mediaPlayerComponent.getMediaPlayer();
 		int chapter = mediaPlayer.getChapter();
 		int title = mediaPlayer.getTitle();
-		log.info("title {} - chapter {}", chapter, title);
-		
+
 		List<List<String>> allChapterDescriptions = mediaPlayer.getAllChapterDescriptions();
-		mediaPlayer.nextChapter();
-		
-		int newChapter = chapter;
-		if (newChapter == chapter) {
-			int titleCount = mediaPlayer.getTitleCount();
-			int newTitle = title + 1;
-			if (newTitle >= titleCount) {
-				newTitle = 0;
-			}
-			mediaPlayer.setTitle(title);
+		int nbChapterInTitle = allChapterDescriptions.get(title).size();
+		log.info("title {} - chapter {} / {}", title, chapter, nbChapterInTitle);
+
+		if (chapter == nbChapterInTitle - 1) {
+			log.warn("Will set next title !");
+			mediaPlayer.setTitle(title + 1);
+		} else {
+			log.info("Will set next chapter !");
+			mediaPlayer.nextChapter();
 		}
-//		mediaPlayerComponent.getMediaPlayer().skip(10000);
+
+		// mediaPlayerComponent.getMediaPlayer().skip(10000);
 	}
 
 	@Override
