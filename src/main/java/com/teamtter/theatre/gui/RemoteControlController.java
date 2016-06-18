@@ -62,38 +62,68 @@ public class RemoteControlController extends MouseAdapter {
 		mediaPlayerComponent.getMediaPlayer().pause();
 	}
 
-	public void rewind() {
-		// mediaPlayerComponent.getMediaPlayer().skip(-10000);
+	public void rewindTitle() {
 		EmbeddedMediaPlayer mediaPlayer = mediaPlayerComponent.getMediaPlayer();
-		int chapter = mediaPlayer.getChapter();
-		int title = mediaPlayer.getTitle();
-		log.info("title {} - chapter {}", chapter, title);
-		mediaPlayer.previousChapter();
+		int currentTitle = mediaPlayer.getTitle();
+		int newTitle = currentTitle - 1;
+		if (newTitle <= 0) {
+			newTitle = 0;
+		}
+		log.warn("Will set next title: {}", newTitle);
+		mediaPlayer.setTitle(newTitle);
+	}
+	
+	public void rewindChapter() {
+		EmbeddedMediaPlayer mediaPlayer = mediaPlayerComponent.getMediaPlayer();
+		int currentChapter = mediaPlayer.getChapter();
+		int currentTitle = mediaPlayer.getTitle();
+
+		List<List<String>> allChaptersPerTitle = mediaPlayer.getAllChapterDescriptions();
+		int nbChapterInTitle = allChaptersPerTitle.get(currentTitle).size();
+		log.info("currentTitle {} - currentChapter {} / {}", currentTitle, currentChapter, nbChapterInTitle);
+		// (last chaper seems to always mean 'end of title')
+		if (currentChapter <= 0) {
+			rewindTitle();
+		} else {
+			log.info("Will set next chapter: {}", currentChapter-1);
+			mediaPlayer.previousChapter();
+		}
 	}
 
-	public void skip() {
+	public void skipChapter() {
 		EmbeddedMediaPlayer mediaPlayer = mediaPlayerComponent.getMediaPlayer();
-		int chapter = mediaPlayer.getChapter();
-		int title = mediaPlayer.getTitle();
+		int currentChapter = mediaPlayer.getChapter();
+		int currentTitle = mediaPlayer.getTitle();
 
-		List<List<String>> allChapterDescriptions = mediaPlayer.getAllChapterDescriptions();
-		int nbChapterInTitle = allChapterDescriptions.get(title).size();
-		log.info("title {} - chapter {} / {}", title, chapter, nbChapterInTitle);
-
-		if (chapter == nbChapterInTitle - 1) {
-			log.warn("Will set next title !");
-			mediaPlayer.setTitle(title + 1);
+		List<List<String>> allChaptersPerTitle = mediaPlayer.getAllChapterDescriptions();
+		int nbChapterInTitle = allChaptersPerTitle.get(currentTitle).size();
+		log.info("currentTitle {} - currentChapter {} / {}", currentTitle, currentChapter, nbChapterInTitle);
+		// (last chaper seems to always mean 'end of title')
+		if (currentChapter >= nbChapterInTitle - 1) {
+			skipTitle();
 		} else {
-			log.info("Will set next chapter !");
+			log.info("Will set next chapter: {}", currentChapter+1);
 			mediaPlayer.nextChapter();
 		}
-
 		// mediaPlayerComponent.getMediaPlayer().skip(10000);
+	}
+	
+	
+	public void skipTitle() {
+		EmbeddedMediaPlayer mediaPlayer = mediaPlayerComponent.getMediaPlayer();
+		int currentTitle = mediaPlayer.getTitle();
+		List<List<String>> allChaptersPerTitle = mediaPlayer.getAllChapterDescriptions();
+
+		int newTitle = currentTitle + 1;
+		if (newTitle >= allChaptersPerTitle.size()) {
+			newTitle = 0;
+		}
+		log.warn("Will set next title: {}", newTitle);
+		mediaPlayer.setTitle(newTitle);
 	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		log.info("mouseClicked...");
 		if (e.getClickCount() == 2) {
 			EmbeddedMediaPlayer mediaPlayer = mediaPlayerComponent.getMediaPlayer();
 			boolean isFullScreen = mediaPlayer.isFullScreen();

@@ -39,13 +39,8 @@ public class OleaTheatre {
 
 		boolean vlcLibFound = new NativeDiscovery().discover();
 		if (vlcLibFound) {
-			System.out.println(LibVlc.INSTANCE.libvlc_get_version());
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					new OleaTheatre(generalConfig, mediaConfig);
-				}
-			});
+			log.info("LibVlc version : {}", LibVlc.INSTANCE.libvlc_get_version());
+			SwingUtilities.invokeLater(() -> new OleaTheatre(generalConfig, mediaConfig));
 		} else {
 			log.error("LibVLC not found. Exiting...");
 		}
@@ -66,7 +61,7 @@ public class OleaTheatre {
 
 	private void configure() {
 		EmbeddedMediaPlayer mediaPlayer = mediaPlayerComponent.getMediaPlayer();
-//		mediaPlayer.addMediaPlayerEventListener(new TheatreListener()); // for debugging purpose
+		// mediaPlayer.addMediaPlayerEventListener(new TheatreListener()); // for debugging purpose
 
 		// Configure fullscreen toggle feature
 		mediaPlayer.setEnableMouseInputHandling(false); // must be called for M$ Windows
@@ -85,21 +80,19 @@ public class OleaTheatre {
 			Resources.asByteSource(logoInJar).copyTo(com.google.common.io.Files.asByteSink(tmpLogoFile));
 			tmpLogoFile.deleteOnExit();
 			// display the logo after one second (otherwise it is not displayed)
-			new Thread() {
-				@Override
-				public void run() {
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-					}
-					logo().file(tmpLogoFile.getAbsolutePath())
-							.location(0, 0)
-							.position(libvlc_logo_position_e.top_left)
-							.opacity(255)
-							.enable(true)
-							.apply(mediaPlayerComponent.getMediaPlayer());
-				}
-			}.run();
+			new Thread(
+					() -> {
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+						}
+						logo().file(tmpLogoFile.getAbsolutePath())
+								.location(0, 0)
+								.position(libvlc_logo_position_e.top_left)
+								.opacity(255)
+								.enable(true)
+								.apply(mediaPlayerComponent.getMediaPlayer());
+					}).run();
 		} catch (Exception e) {
 			log.error("", e);
 		}

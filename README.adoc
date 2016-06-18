@@ -1,6 +1,5 @@
 :toc: macro
 
-
 toc::[]
 
 == Install
@@ -18,20 +17,24 @@ TODO
 
 == Features TODO
 
-* configure audio output ??? or leave it to system configuration ??? (hdmi !)
-* single button to play DVD (from configured drive) + fileChooser to play local Files
-* next/previous on chapter/files
-* splash screen on start
 * plug to licence manager
-* remember position/settings on clean exit (incl. dual monitor)
 * auto-repeat on end
 * basic playlist/directory play
 * I18N
-
+* icone
+* build auto on commit + packaging
 
 == Features Done
 
+* splash screen on start
+* next/previous on chapter/files
 * switch fullscreen
+* single button to play DVD (from configured drive) + fileChooser to play local Files
+
+== Features NO
+
+* configure audio output ? => No, leave it to system configuration (hdmi) 
+* remember position/settings on clean exit (incl. dual monitor) => No, single screen cloned to 2nd
 
 = License
 
