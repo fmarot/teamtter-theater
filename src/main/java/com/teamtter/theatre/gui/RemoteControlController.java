@@ -47,6 +47,7 @@ public class RemoteControlController extends MouseAdapter {
 				.title(title)
 				.chapter(chapter)
 				.value();
+		log.info("dvdMediaResourceLocation = {}", dvdMediaResourceLocation);
 		mediaPlayerComponent.getMediaPlayer().playMedia(dvdMediaResourceLocation, new String[] {});
 	}
 
@@ -72,7 +73,7 @@ public class RemoteControlController extends MouseAdapter {
 		log.warn("Will set next title: {}", newTitle);
 		mediaPlayer.setTitle(newTitle);
 	}
-	
+
 	public void rewindChapter() {
 		EmbeddedMediaPlayer mediaPlayer = mediaPlayerComponent.getMediaPlayer();
 		int currentChapter = mediaPlayer.getChapter();
@@ -107,8 +108,8 @@ public class RemoteControlController extends MouseAdapter {
 		}
 		// mediaPlayerComponent.getMediaPlayer().skip(10000);
 	}
-	
-	
+
+
 	public void skipTitle() {
 		EmbeddedMediaPlayer mediaPlayer = mediaPlayerComponent.getMediaPlayer();
 		int currentTitle = mediaPlayer.getTitle();
