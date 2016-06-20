@@ -17,17 +17,17 @@ TODO
 
 == Features TODO
 
-* embed free font to have special characters on Windows 7
 * Save prefs (such as last directory opened) in user home through use of specific bean passed to config utility
 * plug to licence manager
 * auto-repeat on end
 * basic playlist/directory play
 * I18N
-* icone
 * build auto on commit + packaging
 
 == Features Done
 
+* icone
+* embed free font to have special characters on Windows 7
 * splash screen on start
 * next/previous on chapter/files
 * switch fullscreen

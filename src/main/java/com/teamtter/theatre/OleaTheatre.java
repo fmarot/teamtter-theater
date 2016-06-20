@@ -5,13 +5,16 @@ import java.awt.Canvas;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import com.google.common.io.ByteStreams;
 import com.google.common.io.Resources;
 import com.teamtter.options.AppConfig;
 import com.teamtter.theatre.gui.RemoteControlController;
@@ -121,6 +124,13 @@ public class OleaTheatre {
 				System.exit(0);
 			}
 		});
+		
+		try {
+			ImageIcon img = new ImageIcon(ByteStreams.toByteArray(this.getClass().getResourceAsStream("/performing_arts.png")));
+			frame.setIconImage(img.getImage());
+		} catch (IOException e1) {
+			log.error("", e1);
+		}
 		
 		frame.setVisible(true);
 	}
