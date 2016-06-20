@@ -54,8 +54,9 @@ public class AppConfig {
 		String homePath = System.getProperty("user.home");
 		File appFolderInUserHome = new File(homePath, "." + applicationName);
 		File userSpecificConfig = new File(appFolderInUserHome, APP_PROPERTIES_FILENAME);
+		log.info("Will try user specific config file: {}", userSpecificConfig);
 		if (userSpecificConfig.exists()) {
-			try (InputStream input = new FileInputStream(APP_PROPERTIES_FILENAME)) {
+			try (InputStream input = new FileInputStream(userSpecificConfig)) {
 				prop.load(input);
 			}
 		}
