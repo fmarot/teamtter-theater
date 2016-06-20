@@ -1,7 +1,5 @@
 package com.teamtter.theatre;
 
-import static uk.co.caprica.vlcj.player.Logo.logo;
-
 import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.event.WindowAdapter;
@@ -25,7 +23,7 @@ import uk.co.caprica.vlcj.binding.LibVlc;
 import uk.co.caprica.vlcj.binding.internal.libvlc_logo_position_e;
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.discovery.NativeDiscovery;
-import uk.co.caprica.vlcj.mrl.DvdMrl;
+import uk.co.caprica.vlcj.player.Logo;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 @Slf4j
@@ -86,7 +84,7 @@ public class OleaTheatre {
 							Thread.sleep(1000);
 						} catch (InterruptedException e) {
 						}
-						logo().file(tmpLogoFile.getAbsolutePath())
+						Logo.logo().file(tmpLogoFile.getAbsolutePath())
 								.location(0, 0)
 								.position(libvlc_logo_position_e.top_left)
 								.opacity(255)
