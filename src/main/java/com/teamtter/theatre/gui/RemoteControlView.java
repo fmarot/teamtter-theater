@@ -1,14 +1,24 @@
 package com.teamtter.theatre.gui;
 
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.GraphicsEnvironment;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
 public class RemoteControlView extends JPanel {
 	
+	private static Font font;
+	
+	static {
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		try {
+			font = Font.createFont(Font.TRUETYPE_FONT, RemoteControlView.class.getResourceAsStream("/fonts/Symbola.ttf"));
+			ge.registerFont(font);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	private final JButton pauseButton;
 
 	private final JButton rewindTitleButton;
@@ -57,9 +67,10 @@ public class RemoteControlView extends JPanel {
 	class RemoteControlButton extends JButton {
 		public RemoteControlButton(String text) {
 			super(text);
-			Font font = getFont();
-			Float s = font.getSize2D();
+			Font defaultFont = getFont();
+			Float s = defaultFont.getSize2D();
 			s += 9.0f;
+//			this.setFont(font.deriveFont(s));
 			this.setFont(font.deriveFont(s));
 		}
 	}

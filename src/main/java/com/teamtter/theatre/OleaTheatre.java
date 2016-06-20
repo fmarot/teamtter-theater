@@ -123,6 +123,7 @@ public class OleaTheatre {
 				System.exit(0);
 			}
 		});
+		
 		frame.setVisible(true);
 	}
 }

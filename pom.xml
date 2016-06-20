@@ -50,7 +50,7 @@
 								<classpathPrefix> ./dependency/</classpathPrefix>
 							</manifest>
 							<manifestEntries>
-								<SplashScreen-Image>splashscreen.gif</SplashScreen-Image>
+<!-- 								<SplashScreen-Image>splashscreen.gif</SplashScreen-Image> -->
 							</manifestEntries>
 						</archive>
 					</configuration>
