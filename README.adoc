@@ -17,6 +17,7 @@ TODO
 
 == Features TODO
 
+* loop through all DVD drive in the computer when clicking on the DVD drive icon
 * Save prefs (such as last directory opened) in user home through use of specific bean passed to config utility
 * plug to licence manager
 * auto-repeat on end
